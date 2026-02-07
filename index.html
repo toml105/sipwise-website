@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SipWise - Smart Drinking Companion</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0A0E21 0%, #1a1f3a 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .container { max-width: 480px; }
+    h1 { font-size: 2.5rem; margin-bottom: 8px; }
+    .tagline { color: #64FFDA; font-size: 1.1rem; margin-bottom: 32px; }
+    .event-card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .event-card h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .event-card p { color: rgba(255,255,255,0.7); font-size: 0.95rem; }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #64FFDA, #7C4DFF);
+      color: #0A0E21;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      margin-top: 16px;
+    }
+    .btn:hover { opacity: 0.9; }
+    .store-links { margin-top: 24px; }
+    .store-links a { color: #64FFDA; text-decoration: underline; margin: 0 8px; }
+    .hidden { display: none; }
+  </style>
+  <script>
+    // Handle deep link redirects for /join/CODE and /live/CODE
+    (function() {
+      const path = window.location.pathname;
+      if (path.startsWith('/join/') || path.startsWith('/live/')) {
+        // Try to open the app via custom scheme
+        window.location.href = 'sipwise:/' + path;
+
+        // If the app doesn't open after 2 seconds, show the download page
+        setTimeout(function() {
+          document.getElementById('event-section').classList.remove('hidden');
+        }, 500);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>SipWise</h1>
+    <p class="tagline">Your Smart Drinking Companion</p>
+
+    <div id="event-section" class="event-card">
+      <h2>You've been invited to an event!</h2>
+      <p>Download SipWise to join your friends and track your night out together.</p>
+      <a class="btn" href="https://apps.apple.com/app/sipwise" id="download-btn">Download SipWise</a>
+    </div>
+
+    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">
+      Track drinks, monitor BAC, discover venues, and plan nights out with friends.
+    </p>
+  </div>
+</body>
+</html>
