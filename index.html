@@ -1,81 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SipWise - Smart Drinking Companion</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #0A0E21 0%, #1a1f3a 100%);
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 24px;
-    }
-    .container { max-width: 480px; }
-    h1 { font-size: 2.5rem; margin-bottom: 8px; }
-    .tagline { color: #64FFDA; font-size: 1.1rem; margin-bottom: 32px; }
-    .event-card {
-      background: rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .event-card h2 { font-size: 1.3rem; margin-bottom: 8px; }
-    .event-card p { color: rgba(255,255,255,0.7); font-size: 0.95rem; }
-    .btn {
-      display: inline-block;
-      background: linear-gradient(135deg, #64FFDA, #7C4DFF);
-      color: #0A0E21;
-      font-weight: 700;
-      font-size: 1.1rem;
-      padding: 14px 32px;
-      border-radius: 12px;
-      text-decoration: none;
-      margin-top: 16px;
-    }
-    .btn:hover { opacity: 0.9; }
-    .store-links { margin-top: 24px; }
-    .store-links a { color: #64FFDA; text-decoration: underline; margin: 0 8px; }
-    .hidden { display: none; }
-  </style>
-  <script>
-    // Handle deep link redirects for /join/CODE and /live/CODE
-    (function() {
-      const path = window.location.pathname;
-      if (path.startsWith('/join/') || path.startsWith('/live/')) {
-        // Try to open the app via custom scheme
-        window.location.href = 'sipwise:/' + path;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SipWise - Smart drink tracking and BAC monitoring for responsible nights out. Track drinks, monitor your BAC in real-time, discover venues, and enjoy social events with friends.">
+  <meta name="theme-color" content="#0A0E21">
 
-        // If the app doesn't open after 2 seconds, show the download page
-        setTimeout(function() {
-          document.getElementById('event-section').classList.remove('hidden');
-        }, 500);
-      }
-    })();
+  <!-- Open Graph -->
+  <meta property="og:title" content="SipWise - Smart Drink Tracking">
+  <meta property="og:description" content="Track your drinks, monitor BAC in real-time, and enjoy nights out responsibly.">
+  <meta property="og:url" content="https://sipwise.co.uk">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SipWise">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SipWise - Smart Drink Tracking">
+  <meta name="twitter:description" content="Track your drinks, monitor BAC in real-time, and enjoy nights out responsibly.">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="https://sipwise.co.uk/favicon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <title>SipWise - Smart Drink Tracking &amp; BAC Monitoring</title>
+
+  <!-- Three.js import map (CDN, no build tools) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+    }
+  }
   </script>
 </head>
 <body>
-  <div class="container">
-    <h1>SipWise</h1>
-    <p class="tagline">Your Smart Drinking Companion</p>
 
-    <div id="event-section" class="event-card">
-      <h2>You've been invited to an event!</h2>
-      <p>Download SipWise to join your friends and track your night out together.</p>
-      <a class="btn" href="https://apps.apple.com/app/sipwise" id="download-btn">Download SipWise</a>
+  <!-- ========== NAV BAR ========== -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <a href="#" class="nav-logo" aria-label="SipWise home">
+        <!-- Inline mini pint glass icon -->
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M8 4h16l-1.5 2.5c0.3 0.8 0.5 1.2 0.5 2.5 0 2-0.8 3.5-1 4l-2 15c-0.2 1.5-1.5 2-3 2h-2c-1.5 0-2.8-0.5-3-2l-2-15c-0.2-0.5-1-2-1-4 0-1.3 0.2-1.7 0.5-2.5L8 4z" stroke="url(#logo-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 14h12" stroke="rgba(255,215,0,0.6)" stroke-width="1" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="logo-grad" x1="8" y1="4" x2="24" y2="28">
+              <stop offset="0%" stop-color="#00D9FF"/>
+              <stop offset="100%" stop-color="#2DD4BF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        SipWise
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#download" class="btn btn-primary nav-cta">Download</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-blob-3" aria-hidden="true"></div>
+
+    <div class="container">
+      <div class="hero-content">
+        <p class="text-overline">Smart Drinking Companion</p>
+        <h1 class="heading-display hero-title">Track smarter.<br>Drink wiser.</h1>
+        <p class="hero-subtitle text-body">
+          Real-time BAC monitoring, social events, venue discovery, and habit insights — all in one beautifully crafted app.
+        </p>
+        <div class="btn-group">
+          <a href="https://apps.apple.com/app/sipwise" class="btn btn-store" aria-label="Download on the App Store">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div>
+              <div class="store-label">Download on the</div>
+              <div class="store-name">App Store</div>
+            </div>
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.sipwise.sipwise" class="btn btn-store" aria-label="Get it on Google Play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.18 23.67c-.35-.58-.18-1.27.08-1.88L8.32 12 3.27 2.22c-.26-.62-.43-1.31-.08-1.9.36-.59 1.05-.7 1.63-.46l16.54 9.53c.62.35.98.92.98 1.61s-.36 1.26-.98 1.62L4.82 24.15c-.58.24-1.27.12-1.64-.48zM8.85 13.18l6.7 6.7L8.85 13.18zm6.7-9.06l-6.7 6.7 6.7-6.7z"/></svg>
+            <div>
+              <div class="store-label">Get it on</div>
+              <div class="store-name">Google Play</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="glass-carousel" id="glassCarousel" aria-label="Drink glass showcase">
+          <div class="glass-carousel-glow" aria-hidden="true"></div>
+
+          <!-- Three.js 3D glass canvas (replaces SVG slides) -->
+          <div class="glass-slide active" id="glassCanvasContainer">
+            <canvas id="glassCanvas" aria-label="3D rendered drink glass"></canvas>
+          </div>
+
+          <!-- SVG fallback (shown if no WebGL) -->
+          <div id="glassCanvasFallback" class="glass-slide" style="display:none;">
+            <svg viewBox="0 0 220 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs><linearGradient id="fb-liq" x1="110" y1="95" x2="110" y2="295" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFCC55" stop-opacity="0.9"/><stop offset="100%" stop-color="#B06E00" stop-opacity="0.8"/></linearGradient><linearGradient id="fb-glass" x1="65" y1="40" x2="155" y2="300"><stop offset="0%" stop-color="rgba(200,220,240,0.15)"/><stop offset="100%" stop-color="rgba(160,190,220,0.04)"/></linearGradient><clipPath id="fb-clip"><path d="M74 44 C73 65 72 80 72 100 C72 118 76 128 80 138 C82 143 82 148 80 160 C77 185 75 220 74 255 C73 270 76 282 84 288 Q97 295 110 295 Q123 295 136 288 C144 282 147 270 146 255 C145 220 143 185 140 160 C138 148 138 143 140 138 C144 128 148 118 148 100 C148 80 147 65 146 44 Z"/></clipPath></defs>
+              <path d="M68 40 C67 62 66 78 66 100 C66 120 70 132 76 142 C79 148 79 155 76 168 C72 195 70 228 69 260 C68 276 72 288 82 294 Q96 302 110 302 Q124 302 138 294 C148 288 152 276 151 260 C150 228 148 195 144 168 C141 155 141 148 144 142 C150 132 154 120 154 100 C154 78 153 62 152 40 Z" fill="url(#fb-glass)" stroke="rgba(200,225,250,0.25)" stroke-width="1"/>
+              <g clip-path="url(#fb-clip)"><rect x="62" y="100" width="96" height="198" fill="url(#fb-liq)"/></g>
+              <path d="M68 40 L152 40" stroke="rgba(220,235,250,0.4)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <!-- (Old SVG slides removed — Three.js canvas above) -->
+
+          <!-- Drink label -->
+          <div class="glass-label" id="glassLabel">
+            <span class="glass-label-text">Pint of Lager</span>
+          </div>
+
+          <!-- Carousel dots -->
+          <div class="glass-dots" aria-label="Glass selector">
+            <button class="glass-dot active" data-index="0" aria-label="Pint glass"></button>
+            <button class="glass-dot" data-index="1" aria-label="Wine glass"></button>
+            <button class="glass-dot" data-index="2" aria-label="Beer stein"></button>
+            <button class="glass-dot" data-index="3" aria-label="Cocktail glass"></button>
+            <button class="glass-dot" data-index="4" aria-label="Champagne flute"></button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">
-      Track drinks, monitor BAC, discover venues, and plan nights out with friends.
-    </p>
-  </div>
+    <div class="scroll-indicator" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES ========== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header" data-animate>
+        <p class="text-overline">Features</p>
+        <h2 class="heading-section">Everything for a smarter night out</h2>
+        <p class="text-body">From real-time BAC monitoring to social events, SipWise has everything you need to enjoy responsibly.</p>
+      </div>
+
+      <div class="features-grid" data-animate-stagger>
+        <!-- BAC Monitoring -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2h8l-1 4c.5 1 .8 2.5.5 4-.5 2.5-1 5-1.5 8-.3 1.5-1.2 3-4 3s-3.7-1.5-4-3c-.5-3-1-5.5-1.5-8-.3-1.5 0-3 .5-4L8 2z"/>
+              <path d="M8 12h8" opacity="0.5"/>
+            </svg>
+          </div>
+          <h3 class="heading-card">Real-Time BAC</h3>
+          <p class="text-body">Watch your BAC rise and fall in real-time with our signature frosted pint glass visualisation. Physics-based liquid simulation with colour-coded safety levels.</p>
+        </div>
+
+        <!-- Smart Logging -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </div>
+          <h3 class="heading-card">Smart Logging</h3>
+          <p class="text-body">Log drinks in seconds with smart presets for beer, wine, spirits, and cocktails. Track prices, snap photos, and tag venues automatically.</p>
+        </div>
+
+        <!-- Social Events -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3 class="heading-card">Social Events</h3>
+          <p class="text-body">Create live group drinking events and track everyone's progress in real-time. Share invite codes, see who's out, and keep your group connected.</p>
+        </div>
+
+        <!-- Safety -->
+        <div class="glass-card feature-card">
+          <div class="feature-icon pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
+          <h3 class="heading-card">Safety First</h3>
+          <p class="text-body">Hydration reminders, sober-up countdown timers, hangover predictions, and emergency contacts. Because a great night means getting home safe.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HOW IT WORKS ========== -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header" data-animate>
+        <p class="text-overline">How It Works</p>
+        <h2 class="heading-section">Three steps to a smarter night</h2>
+      </div>
+
+      <div class="steps" data-animate-stagger>
+        <div class="step">
+          <div class="step-number">01</div>
+          <h3 class="step-title">Download</h3>
+          <p class="step-desc">Get SipWise free from the App Store or Google Play. Set up your profile in under a minute.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">02</div>
+          <h3 class="step-title">Log Drinks</h3>
+          <p class="step-desc">Tap to log drinks with smart presets or snap a photo. Your BAC updates instantly.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">03</div>
+          <h3 class="step-title">Get Insights</h3>
+          <p class="step-desc">Watch your BAC in real-time, track spending habits, and see how your nights compare.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS ========== -->
+  <section class="stats" id="stats">
+    <div class="container">
+      <div class="glass-card stats-band" data-animate>
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-number" data-count="50000">0</div>
+            <div class="stat-label">Drinks Tracked</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="2500">0</div>
+            <div class="stat-label">Events Hosted</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="500">0</div>
+            <div class="stat-label">Venues Discovered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DOWNLOAD CTA ========== -->
+  <section class="cta" id="download">
+    <div class="cta-bg" aria-hidden="true"></div>
+    <div class="container" data-animate>
+      <h2 class="heading-section">Drink smarter tonight.</h2>
+      <p class="text-body">Join thousands of people across the UK who are making their nights out safer, smarter, and more fun.</p>
+      <div class="btn-group">
+        <a href="https://apps.apple.com/app/sipwise" class="btn btn-store" aria-label="Download on the App Store">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div>
+            <div class="store-label">Download on the</div>
+            <div class="store-name">App Store</div>
+          </div>
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.sipwise.sipwise" class="btn btn-store" aria-label="Get it on Google Play">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.18 23.67c-.35-.58-.18-1.27.08-1.88L8.32 12 3.27 2.22c-.26-.62-.43-1.31-.08-1.9.36-.59 1.05-.7 1.63-.46l16.54 9.53c.62.35.98.92.98 1.61s-.36 1.26-.98 1.62L4.82 24.15c-.58.24-1.27.12-1.64-.48zM8.85 13.18l6.7 6.7L8.85 13.18zm6.7-9.06l-6.7 6.7 6.7-6.7z"/></svg>
+          <div>
+            <div class="store-label">Get it on</div>
+            <div class="store-name">Google Play</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">SipWise</div>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="footer-legal">
+        Made with care in the UK<br>
+        &copy; 2025 SipWise. All rights reserved.<br>
+        Must be 18+ to use this app. Please drink responsibly.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script type="module" src="js/three-glasses.js"></script>
 </body>
 </html>
