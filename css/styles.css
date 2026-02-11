@@ -410,7 +410,11 @@ section { position: relative; }
   filter: drop-shadow(0 20px 60px rgba(0, 217, 255, 0.12));
 }
 
-/* Three.js canvas */
+/* Three.js canvas — radial mask to blend edges seamlessly into the page */
+#glassCanvasContainer {
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, black 30%, transparent 62%);
+  mask-image: radial-gradient(ellipse 70% 70% at center, black 30%, transparent 62%);
+}
 #glassCanvas {
   width: 100%;
   height: 100%;

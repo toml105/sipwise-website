@@ -26,21 +26,24 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   const hasWebGL2 = !!canvas.getContext('webgl2');
 
   // --- Renderer ---
+  // alpha: false with scene.background — transmission NEEDS a background to refract through.
+  // CSS mask on the canvas container handles edge blending with the page.
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true,
-    alpha: true,
+    alpha: false,
     powerPreference: 'high-performance',
-    premultipliedAlpha: false,
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
+  renderer.toneMappingExposure = 1.8;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor(0x000000, 0);
 
   // --- Scene ---
   const scene = new THREE.Scene();
+  // This background is CRITICAL for transmission glass to look clear.
+  // Without it, transmission materials render white/opaque.
+  scene.background = new THREE.Color(0x111630);
 
   // --- Procedural environment map ---
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -54,15 +57,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   camera.lookAt(0, -0.1, 0);
 
   // --- Lights (subtle studio setup — let env map do the heavy lifting) ---
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
   keyLight.position.set(3, 4, 5);
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight(0x88bbff, 0.4);
+  const rimLight = new THREE.DirectionalLight(0x88bbff, 0.6);
   rimLight.position.set(-3, 2, -4);
   scene.add(rimLight);
 
-  const fillLight = new THREE.AmbientLight(0x202040, 0.2);
+  const fillLight = new THREE.AmbientLight(0x404060, 0.3);
   scene.add(fillLight);
 
   // --- Reduced motion ---
@@ -75,19 +78,19 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
       return new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
         metalness: 0.0,
-        roughness: 0.02,
+        roughness: 0.05,
         transmission: 1.0,
         transparent: true,
         opacity: 1.0,
         ior: 1.5,
-        thickness: 0.08,
-        specularIntensity: 0.8,
+        thickness: 0.4,
+        specularIntensity: 1.0,
         specularColor: 0xffffff,
-        envMapIntensity: 1.0,
+        envMapIntensity: 1.5,
         side: THREE.DoubleSide,
         depthWrite: false,
-        attenuationColor: new THREE.Color(0xf0f5ff),
-        attenuationDistance: 2.0,
+        attenuationColor: new THREE.Color(0xe8f0ff),
+        attenuationDistance: 1.5,
       });
     }
     // WebGL1 fallback
@@ -138,26 +141,30 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
   // --- Glass profile definitions ---
 
+  // Tulip pint — short foot, stem, bulbous bowl that narrows then flares at rim
   function pintProfile(inner) {
-    const w = inner ? 0.03 : 0;
+    const w = inner ? 0.025 : 0;
     const pts = [];
-    // Base
-    pts.push(new THREE.Vector2(0.00, -1.40));
-    pts.push(new THREE.Vector2(0.48 - w, -1.40));
-    // Taper up — slightly narrowing
-    pts.push(new THREE.Vector2(0.46 - w, -1.10));
-    pts.push(new THREE.Vector2(0.43 - w, -0.50));
-    pts.push(new THREE.Vector2(0.42 - w, 0.00));
-    pts.push(new THREE.Vector2(0.42 - w, 0.30));
-    // Nonic bulge at ~2/3 height
-    pts.push(new THREE.Vector2(0.45 - w, 0.50));
-    pts.push(new THREE.Vector2(0.50 - w, 0.70));
-    pts.push(new THREE.Vector2(0.52 - w, 0.80));
-    pts.push(new THREE.Vector2(0.50 - w, 0.92));
-    pts.push(new THREE.Vector2(0.46 - w, 1.00));
-    // Flare to rim
-    pts.push(new THREE.Vector2(0.48 - w, 1.15));
-    pts.push(new THREE.Vector2(0.52 - w, 1.35));
+    // Base foot
+    pts.push(new THREE.Vector2(0.00, -1.70));
+    pts.push(new THREE.Vector2(0.38 - w, -1.70));
+    pts.push(new THREE.Vector2(0.38 - w, -1.64));
+    // Short stem
+    pts.push(new THREE.Vector2(0.06 - w * 0.5, -1.64));
+    pts.push(new THREE.Vector2(0.055 - w * 0.5, -1.10));
+    // Bowl starts — expands into bulbous belly
+    pts.push(new THREE.Vector2(0.12 - w, -0.95));
+    pts.push(new THREE.Vector2(0.30 - w, -0.60));
+    pts.push(new THREE.Vector2(0.46 - w, -0.15));
+    pts.push(new THREE.Vector2(0.52 - w, 0.25));
+    // Widest point of bowl
+    pts.push(new THREE.Vector2(0.54 - w, 0.55));
+    // Narrows inward
+    pts.push(new THREE.Vector2(0.50 - w, 0.80));
+    pts.push(new THREE.Vector2(0.46 - w, 0.95));
+    // Flares out at rim
+    pts.push(new THREE.Vector2(0.48 - w, 1.10));
+    pts.push(new THREE.Vector2(0.52 - w, 1.30));
     return pts;
   }
 
@@ -217,6 +224,31 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
     return pts;
   }
 
+  // Stein profile — traditional Maßkrug: wide rounded belly, thick base, slight taper to rim
+  function steinProfile(inner) {
+    const w = inner ? 0.03 : 0;
+    const pts = [];
+    // Thick heavy base
+    pts.push(new THREE.Vector2(0.00, -1.30));
+    pts.push(new THREE.Vector2(0.55 - w, -1.30));
+    pts.push(new THREE.Vector2(0.55 - w, -1.20));
+    // Body — pronounced belly curve, widest in lower-middle
+    pts.push(new THREE.Vector2(0.52 - w, -1.05));
+    pts.push(new THREE.Vector2(0.56 - w, -0.70));
+    pts.push(new THREE.Vector2(0.58 - w, -0.30));
+    // Widest belly point
+    pts.push(new THREE.Vector2(0.59 - w, 0.05));
+    pts.push(new THREE.Vector2(0.58 - w, 0.35));
+    // Tapers inward toward rim
+    pts.push(new THREE.Vector2(0.55 - w, 0.65));
+    pts.push(new THREE.Vector2(0.52 - w, 0.90));
+    pts.push(new THREE.Vector2(0.50 - w, 1.05));
+    // Rim flare
+    pts.push(new THREE.Vector2(0.51 - w, 1.15));
+    pts.push(new THREE.Vector2(0.53 - w, 1.25));
+    return pts;
+  }
+
   // --- Geometry builders ---
 
   function buildLiquidGeometry(innerProfile, fillFraction, segments) {
@@ -265,7 +297,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
       }
     }
 
-    // If narrowest point is wide (>0.3), it's a pint-type glass with no stem
+    // If narrowest point is wide (>0.3), it's a stein-type glass with no stem
     if (stemMinX > 0.3) return 0;
 
     // For stemmed glasses: from the stem minimum, walk forward to find where bowl widens
@@ -365,55 +397,34 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   // --- Build complete glass models ---
 
   const GLASS_CONFIGS = [
-    { name: 'pint', profile: pintProfile, liquidColor: 0xC07008, liquidTrans: 0.45, fill: 0.82, hasFoam: true, hasBubbles: true, bubbleCount: 30 },
+    { name: 'pint', profile: pintProfile, liquidColor: 0xC07008, liquidTrans: 0.45, fill: 0.75, hasFoam: true, hasBubbles: true, bubbleCount: 30 },
     { name: 'wine', profile: wineProfile, liquidColor: 0x8B0025, liquidTrans: 0.15, fill: 0.50, hasFoam: false, hasBubbles: false },
     { name: 'stein', profile: steinProfile, liquidColor: 0xC89020, liquidTrans: 0.4, fill: 0.8, hasFoam: true, hasBubbles: true, bubbleCount: 25 },
     { name: 'cocktail', profile: cocktailProfile, liquidColor: 0xA050E0, liquidTrans: 0.35, fill: 0.60, hasFoam: false, hasBubbles: false },
     { name: 'champagne', profile: champagneProfile, liquidColor: 0xE8C840, liquidTrans: 0.65, fill: 0.7, hasFoam: false, hasBubbles: true, bubbleCount: 40 },
   ];
 
-  // Stein profile — tapered cylindrical body with slight belly curve
-  function steinProfile(inner) {
-    const w = inner ? 0.03 : 0;
-    const pts = [];
-    // Thick base
-    pts.push(new THREE.Vector2(0.00, -1.30));
-    pts.push(new THREE.Vector2(0.52 - w, -1.30));
-    pts.push(new THREE.Vector2(0.52 - w, -1.22));
-    // Body with gentle belly curve
-    pts.push(new THREE.Vector2(0.48 - w, -1.10));
-    pts.push(new THREE.Vector2(0.44 - w, -0.60));
-    pts.push(new THREE.Vector2(0.43 - w, -0.10));
-    pts.push(new THREE.Vector2(0.44 - w, 0.30));
-    pts.push(new THREE.Vector2(0.46 - w, 0.70));
-    pts.push(new THREE.Vector2(0.50 - w, 1.00));
-    // Slight flare at rim
-    pts.push(new THREE.Vector2(0.52 - w, 1.20));
-    pts.push(new THREE.Vector2(0.54 - w, 1.30));
-    return pts;
-  }
-
   function buildSteinGroup() {
     const group = new THREE.Group();
     const glassMat = createGlassMaterial();
     const liquidMat = createLiquidMaterial(0xC89020, 0.4);
 
-    // Body — lathe geometry with belly curve
+    // Body — lathe geometry with rounded belly
     const outerPts = steinProfile(false);
     const innerPts = steinProfile(true);
     const bodyGeo = new THREE.LatheGeometry(outerPts, 48);
     const bodyMesh = new THREE.Mesh(bodyGeo, glassMat);
     group.add(bodyMesh);
 
-    // Handle — D-shape attached to the side
+    // Handle — D-shape attached to the side, bigger for the wider stein
     const handleCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.50, 0.8, 0),
-      new THREE.Vector3(0.80, 0.6, 0),
-      new THREE.Vector3(0.88, 0.1, 0),
-      new THREE.Vector3(0.80, -0.4, 0),
-      new THREE.Vector3(0.50, -0.6, 0),
+      new THREE.Vector3(0.53, 0.85, 0),
+      new THREE.Vector3(0.85, 0.65, 0),
+      new THREE.Vector3(0.95, 0.1, 0),
+      new THREE.Vector3(0.85, -0.45, 0),
+      new THREE.Vector3(0.53, -0.65, 0),
     ]);
-    const handleGeo = new THREE.TubeGeometry(handleCurve, 24, 0.05, 8, false);
+    const handleGeo = new THREE.TubeGeometry(handleCurve, 24, 0.055, 8, false);
     const handleMesh = new THREE.Mesh(handleGeo, glassMat);
     group.add(handleMesh);
 
@@ -461,7 +472,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
       group.add(liquidMesh);
     }
 
-    // Foam (pint only in lathe glasses)
+    // Foam
     if (config.hasFoam) {
       const foamGeo = buildFoamGeometry(innerPts, config.fill);
       if (foamGeo) {
