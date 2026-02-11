@@ -52,9 +52,10 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   scene.environment = envMap;
 
   // --- Camera ---
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-  camera.position.set(0, 0.0, 6.8);
-  camera.lookAt(0, -0.1, 0);
+  // Pulled back for smaller glass in the phone frame
+  const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
+  camera.position.set(0, 0.0, 7.6);
+  camera.lookAt(0, -0.15, 0);
 
   // --- Lights (subtle studio setup — let env map do the heavy lifting) ---
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -110,23 +111,26 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
       return new THREE.MeshPhysicalMaterial({
         color: color,
         metalness: 0.0,
-        roughness: 0.15,
-        transmission: trans * 0.4,
+        roughness: 0.08,
+        transmission: trans * 0.25,
         transparent: true,
-        opacity: 1.0,
-        ior: 1.34,
-        thickness: 3.0,
+        opacity: 0.95,
+        ior: 1.36,
+        thickness: 5.0,
         side: THREE.FrontSide,
         attenuationColor: new THREE.Color(color),
-        attenuationDistance: 0.15,
-        envMapIntensity: 0.6,
+        attenuationDistance: 0.08,
+        envMapIntensity: 0.8,
+        specularIntensity: 0.4,
+        clearcoat: 0.3,
+        clearcoatRoughness: 0.1,
       });
     }
     return new THREE.MeshPhongMaterial({
       color: color,
       transparent: true,
-      opacity: 0.7,
-      shininess: 60,
+      opacity: 0.8,
+      shininess: 80,
       side: THREE.DoubleSide,
     });
   }
@@ -397,17 +401,17 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   // --- Build complete glass models ---
 
   const GLASS_CONFIGS = [
-    { name: 'pint', profile: pintProfile, liquidColor: 0xC07008, liquidTrans: 0.45, fill: 0.75, hasFoam: true, hasBubbles: true, bubbleCount: 30 },
-    { name: 'wine', profile: wineProfile, liquidColor: 0x8B0025, liquidTrans: 0.15, fill: 0.50, hasFoam: false, hasBubbles: false },
-    { name: 'stein', profile: steinProfile, liquidColor: 0xC89020, liquidTrans: 0.4, fill: 0.8, hasFoam: true, hasBubbles: true, bubbleCount: 25 },
-    { name: 'cocktail', profile: cocktailProfile, liquidColor: 0xA050E0, liquidTrans: 0.35, fill: 0.60, hasFoam: false, hasBubbles: false },
-    { name: 'champagne', profile: champagneProfile, liquidColor: 0xE8C840, liquidTrans: 0.65, fill: 0.7, hasFoam: false, hasBubbles: true, bubbleCount: 40 },
+    { name: 'pint', profile: pintProfile, liquidColor: 0xD4880A, liquidTrans: 0.3, fill: 0.75, hasFoam: true, hasBubbles: true, bubbleCount: 30 },
+    { name: 'wine', profile: wineProfile, liquidColor: 0x6E0020, liquidTrans: 0.08, fill: 0.50, hasFoam: false, hasBubbles: false },
+    { name: 'stein', profile: steinProfile, liquidColor: 0xB87D18, liquidTrans: 0.25, fill: 0.8, hasFoam: true, hasBubbles: true, bubbleCount: 25 },
+    { name: 'cocktail', profile: cocktailProfile, liquidColor: 0x7B30C0, liquidTrans: 0.2, fill: 0.60, hasFoam: false, hasBubbles: false },
+    { name: 'champagne', profile: champagneProfile, liquidColor: 0xD4B030, liquidTrans: 0.4, fill: 0.7, hasFoam: false, hasBubbles: true, bubbleCount: 40 },
   ];
 
   function buildSteinGroup() {
     const group = new THREE.Group();
     const glassMat = createGlassMaterial();
-    const liquidMat = createLiquidMaterial(0xC89020, 0.4);
+    const liquidMat = createLiquidMaterial(0xB87D18, 0.25);
 
     // Body — lathe geometry with rounded belly
     const outerPts = steinProfile(false);
@@ -553,11 +557,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
     const current = glassModels[currentIndex];
 
     if (current && !prefersReducedMotion) {
-      // Slow Y-axis rotation (~16s per revolution)
-      current.rotation.y = elapsed * (Math.PI * 2 / 16);
-      // Gentle bob
-      current.position.y = Math.sin(elapsed * 0.8) * 0.04;
-      current.position.x = Math.sin(elapsed * 0.5) * 0.015;
+      // Slow Y-axis rotation only (~18s per revolution)
+      current.rotation.y = elapsed * (Math.PI * 2 / 18);
     }
 
     // Update bubbles
