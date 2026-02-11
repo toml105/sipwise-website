@@ -62,6 +62,7 @@
   /* Easing */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* --- Reset --- */
@@ -342,7 +343,9 @@ section { position: relative; }
   line-height: 1.7;
 }
 
-/* Glass Carousel Hero Visual */
+/* ============================================
+   GLASS CAROUSEL / PHONE MOCKUP
+   ============================================ */
 .hero-visual {
   flex: 1;
   display: flex;
@@ -353,52 +356,98 @@ section { position: relative; }
 
 .glass-carousel {
   position: relative;
-  width: 280px;
-  height: 600px;
-  animation: glass-float 6s ease-in-out infinite;
+  width: 360px;
+  height: 720px;
   overflow: visible;
 }
 
-/* Ambient glow behind phone */
+/* Ambient glow behind phone — shifts color per drink */
 .glass-carousel-glow {
   position: absolute;
-  inset: -60px;
+  inset: -80px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 217, 255, 0.15), rgba(108, 99, 255, 0.08), transparent 70%);
   animation: pulse-glow 4s ease-in-out infinite;
   z-index: 0;
-  transition: background 1s ease;
+  transition: background 1.2s ease;
+  pointer-events: none;
 }
 
 /* ---- iPhone Frame ---- */
 .iphone-frame {
   position: relative;
-  width: 260px;
-  height: 540px;
-  background: #1a1a2e;
-  border-radius: 44px;
-  border: 3px solid rgba(255, 255, 255, 0.12);
+  width: 320px;
+  height: 660px;
+  background: linear-gradient(165deg, #1e2240 0%, #141830 50%, #0d1025 100%);
+  border-radius: 48px;
+  border: 2.5px solid rgba(255, 255, 255, 0.10);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.3),
-    0 20px 60px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(45, 212, 191, 0.06),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    0 32px 80px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow: hidden;
   z-index: 2;
   margin: 0 auto;
+  animation: phone-float 8s ease-in-out infinite;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Specular highlight on frame edge */
+.iphone-frame::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  z-index: 20;
+  border-radius: 1px;
+}
+
+/* Side button details */
+.iphone-frame::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 140px;
+  width: 3px;
+  height: 34px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+  border-radius: 2px;
+  z-index: 20;
 }
 
 /* Dynamic island */
 .iphone-notch {
   position: absolute;
-  top: 10px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90px;
-  height: 24px;
+  width: 95px;
+  height: 28px;
   background: #000;
-  border-radius: 12px;
+  border-radius: 14px;
   z-index: 10;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Tiny camera dot inside dynamic island */
+.iphone-notch::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #1a1a3a, #060612);
+  box-shadow: inset 0 0 2px rgba(0, 100, 200, 0.4);
 }
 
 /* Phone screen area */
@@ -408,10 +457,36 @@ section { position: relative; }
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 41px;
+  border-radius: 46px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Status bar mock — time, signal, battery */
+.app-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 11;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+.status-time { font-weight: 700; }
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.status-icons svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
 }
 
 /* App header inside phone */
@@ -419,20 +494,24 @@ section { position: relative; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 42px 20px 8px;
+  padding: 20px 22px 10px;
   z-index: 5;
   position: relative;
 }
 .app-header-logo {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--accent-teal);
-  letter-spacing: 0.02em;
+  font-weight: 800;
+  font-size: 1rem;
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.01em;
 }
 .app-header-icon {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
   display: flex;
+  transition: color 0.3s ease;
 }
 
 /* Glass canvas inside phone screen */
@@ -441,6 +520,7 @@ section { position: relative; }
   position: relative;
   opacity: 1;
   visibility: visible;
+  min-height: 0;
 }
 .glass-slide.active {
   opacity: 1;
@@ -451,43 +531,44 @@ section { position: relative; }
   width: 100%;
   height: 100%;
   display: block;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #glassCanvas.fading {
   opacity: 0;
 }
 
 /* When Three.js is active, disable CSS float animation (JS handles bobbing) */
-.glass-carousel.threejs-active {
-  animation: none;
+.glass-carousel.threejs-active .iphone-frame {
+  /* phone still floats, glass bobs independently inside */
 }
 
 /* Drink label inside phone */
 .glass-label {
   text-align: center;
-  padding: 4px 0 2px;
+  padding: 2px 0 0;
   z-index: 5;
   position: relative;
 }
 .glass-label-text {
   font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.04em;
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease, transform 0.4s var(--ease-out-expo);
   white-space: nowrap;
+  display: inline-block;
 }
 
 /* App bottom nav inside phone */
 .app-bottom-nav {
   display: flex;
   justify-content: space-around;
-  padding: 6px 8px 14px;
-  background: rgba(10, 14, 33, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 8px 10px 20px;
+  background: rgba(10, 14, 33, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 5;
   position: relative;
@@ -496,59 +577,105 @@ section { position: relative; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  color: rgba(255, 255, 255, 0.35);
+  gap: 3px;
+  color: rgba(255, 255, 255, 0.30);
   font-size: 0.55rem;
   font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease;
 }
 .app-nav-item.active {
   color: var(--accent-teal);
 }
 .app-nav-item svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Home indicator bar */
 .iphone-home-bar {
   position: absolute;
-  bottom: 6px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
+  width: 110px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 2px;
   z-index: 10;
 }
 
-/* Carousel dots (below phone) */
-.glass-dots {
+/* ---- Phone reflection / shine overlay ---- */
+.phone-shine {
   position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 46px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* ---- Drink type indicator pills ---- */
+.glass-dots {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   z-index: 3;
+  justify-content: center;
+  margin-top: 24px;
 }
 .glass-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  width: 28px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
   padding: 0;
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.5s var(--ease-out-expo);
   cursor: pointer;
 }
-.glass-dot:hover { background: rgba(255, 255, 255, 0.35); }
+.glass-dot:hover { background: rgba(255, 255, 255, 0.25); }
 .glass-dot.active {
   background: var(--accent-teal);
-  transform: scale(1.25);
-  box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
-  border-color: transparent;
+  width: 40px;
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.35);
 }
+
+/* ---- Floating drink names around phone ---- */
+.phone-orbit-labels {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.orbit-label {
+  position: absolute;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transition: all 0.6s var(--ease-out-expo);
+}
+.orbit-label.is-active {
+  color: rgba(45, 212, 191, 0.35);
+  transform: scale(1.05);
+}
+.orbit-label:nth-child(1) { top: 8%; left: -40px; }
+.orbit-label:nth-child(2) { top: 30%; right: -50px; }
+.orbit-label:nth-child(3) { bottom: 25%; left: -55px; }
+.orbit-label:nth-child(4) { bottom: 35%; right: -40px; }
+.orbit-label:nth-child(5) { top: 55%; left: -45px; }
 
 .scroll-indicator {
   position: absolute;
@@ -850,23 +977,16 @@ section { position: relative; }
   75% { transform: translate(15px, 25px) scale(1.02); }
 }
 
-@keyframes glass-float {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(3px, -8px) rotate(0.5deg); }
-  50% { transform: translate(-2px, 4px) rotate(-0.3deg); }
-  75% { transform: translate(4px, -3px) rotate(0.2deg); }
+@keyframes phone-float {
+  0%, 100% { transform: translateY(0) rotate3d(0, 1, 0, 0deg); }
+  25% { transform: translateY(-10px) rotate3d(0, 1, 0.02, 1.5deg); }
+  50% { transform: translateY(2px) rotate3d(0, 1, -0.01, -0.5deg); }
+  75% { transform: translateY(-6px) rotate3d(0, 1, 0.01, 0.8deg); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
-}
-
-@keyframes bubble-rise {
-  0% { transform: translateY(0) translateX(0); opacity: 0.5; }
-  25% { opacity: 0.6; }
-  50% { transform: translateY(-80px) translateX(4px); opacity: 0.35; }
-  100% { transform: translateY(-160px) translateX(-3px); opacity: 0; }
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
 @keyframes bounce-down {
@@ -874,33 +994,9 @@ section { position: relative; }
   50% { transform: translateX(-50%) translateY(8px); opacity: 0.8; }
 }
 
-@keyframes liquid-fill {
-  0% { transform: scaleY(0); }
-  100% { transform: scaleY(1); }
-}
-
-@keyframes liquid-wave {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-25%); }
-}
-
-@keyframes color-cycle {
-  0%, 100% { stop-color: #A8E6FF; }
-  20% { stop-color: #00D9FF; }
-  40% { stop-color: #FFD700; }
-  60% { stop-color: #FB923C; }
-  80% { stop-color: #FF6B9D; }
-}
-
-@keyframes frost-fade {
-  0% { opacity: 0.8; }
-  50% { opacity: 0.2; }
-  100% { opacity: 0.8; }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
+@keyframes shimmer-phone {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* ============================================
@@ -913,8 +1009,14 @@ section { position: relative; }
   .hero-content { max-width: 100%; }
   .hero-subtitle { margin-left: auto; margin-right: auto; }
   .btn-group { justify-content: center; }
-  .glass-carousel { width: 220px; height: 340px; overflow: visible; }
-  .glass-slide { width: 190px; height: 270px; }
+  .glass-carousel { width: 240px; height: 520px; }
+  .iphone-frame { width: 220px; height: 460px; border-radius: 38px; }
+  .iphone-screen { border-radius: 36px; }
+  .iphone-notch { width: 72px; height: 22px; border-radius: 11px; top: 8px; }
+  .app-status-bar { padding: 10px 20px 0; font-size: 0.6rem; }
+  .app-header { padding: 14px 16px 6px; }
+  .app-header-logo { font-size: 0.85rem; }
+  .phone-orbit-labels { display: none; }
   .nav-links { display: none; }
   .features-grid { grid-template-columns: 1fr; }
   .steps { flex-direction: column; gap: 40px; }
@@ -931,21 +1033,24 @@ section { position: relative; }
   .hero-content { max-width: 100%; }
   .hero-subtitle { margin-left: auto; margin-right: auto; }
   .btn-group { justify-content: center; }
-  .glass-carousel { width: 250px; height: 380px; overflow: visible; }
-  .glass-slide { width: 220px; height: 310px; }
+  .glass-carousel { width: 280px; height: 600px; }
+  .iphone-frame { width: 260px; height: 540px; border-radius: 42px; }
+  .iphone-screen { border-radius: 40px; }
+  .phone-orbit-labels { display: none; }
 }
 
 /* Small desktop */
 @media (min-width: 768px) and (max-width: 1023px) {
   .hero .container { gap: 40px; }
-  .glass-carousel { width: 260px; height: 390px; overflow: visible; }
-  .glass-slide { width: 230px; height: 320px; }
+  .glass-carousel { width: 300px; height: 640px; }
+  .iphone-frame { width: 270px; height: 560px; }
 }
 
 /* Desktop hover effects */
 @media (hover: hover) {
   .feature-card:hover .feature-icon { transform: scale(1.08); }
   .feature-icon { transition: transform 0.3s var(--ease-out-expo); }
+  .glass-dot:hover { transform: scaleY(1.3); }
 }
 
 /* Reduced motion */
@@ -958,4 +1063,5 @@ section { position: relative; }
   html { scroll-behavior: auto; }
   [data-animate] { opacity: 1; transform: none; }
   [data-animate-stagger] > * { opacity: 1; transform: none; }
+  .iphone-frame { animation: none; }
 }

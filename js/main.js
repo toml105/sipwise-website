@@ -185,6 +185,13 @@
       var glow = carousel.querySelector('.glass-carousel-glow');
       if (glow) glow.style.background = glowColors[index];
 
+      // Update orbit labels
+      var orbitLabels = carousel.querySelectorAll('.orbit-label');
+      orbitLabels.forEach(function (lbl) {
+        var drinkIdx = parseInt(lbl.getAttribute('data-drink'), 10);
+        lbl.classList.toggle('is-active', drinkIdx === index);
+      });
+
       // Tell Three.js to swap the glass model
       if (window.sipwiseGlass && window.sipwiseGlass.swapGlass) {
         window.sipwiseGlass.swapGlass(index);
