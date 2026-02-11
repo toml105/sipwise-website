@@ -54,8 +54,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   // --- Camera ---
   // Pulled back for smaller glass in the phone frame
   const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
-  camera.position.set(0, 0.0, 7.6);
-  camera.lookAt(0, -0.15, 0);
+  camera.position.set(0, 0.8, 11.5);
+  camera.lookAt(0, -0.1, 0);
 
   // --- Lights (subtle studio setup — let env map do the heavy lifting) ---
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -511,14 +511,22 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
   if (carousel) carousel.classList.add('threejs-active');
 
   // --- Swap glass model ---
+  var swapTimeout = null;
+
   function swapGlass(newIndex) {
     if (newIndex === currentIndex) return;
     if (newIndex < 0 || newIndex >= glassModels.length) return;
 
+    // Cancel any pending swap
+    if (swapTimeout) {
+      clearTimeout(swapTimeout);
+      canvas.classList.remove('fading');
+    }
+
     // Fade out
     canvas.classList.add('fading');
 
-    setTimeout(function () {
+    swapTimeout = setTimeout(function () {
       // Swap models
       scene.remove(glassModels[currentIndex]);
       scene.add(glassModels[newIndex]);
@@ -526,6 +534,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
       // Fade in
       canvas.classList.remove('fading');
+      swapTimeout = null;
     }, 250);
   }
 

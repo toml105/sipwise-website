@@ -143,14 +143,10 @@
     if (!carousel) return;
 
     var dots = carousel.querySelectorAll('.glass-dot');
-    var label = document.getElementById('glassLabel');
-    var labelText = label ? label.querySelector('.glass-label-text') : null;
     var current = 0;
     var total = 5;
     var autoTimer = null;
     var isTransitioning = false;
-
-    var labels = ['Pint of Lager', 'Red Wine', 'Beer Stein', 'Cocktail', 'Champagne'];
 
     // Glow colors per glass type
     var glowColors = [
@@ -160,6 +156,41 @@
       'radial-gradient(circle, rgba(157,78,221,0.2), rgba(255,107,157,0.1), transparent 70%)',    // cocktail - purple
       'radial-gradient(circle, rgba(255,230,128,0.2), rgba(255,215,0,0.1), transparent 70%)'     // champagne - pale gold
     ];
+
+    // Dashboard data per drink — simulates a live session
+    var dashData = [
+      { bac: '0.042', peak: '0.042', sober: '2h 15m', units: '3.2', spend: '£18.50', drinks: '4', status: 'SAFE',         statusColor: '#10B981' },  // pint
+      { bac: '0.061', peak: '0.061', sober: '3h 40m', units: '4.8', spend: '£32.00', drinks: '5', status: 'MILD',         statusColor: '#FCD34D' },  // wine
+      { bac: '0.085', peak: '0.089', sober: '5h 10m', units: '7.1', spend: '£28.50', drinks: '6', status: 'INTOXICATED', statusColor: '#FB923C' },  // stein
+      { bac: '0.025', peak: '0.025', sober: '1h 20m', units: '1.5', spend: '£12.00', drinks: '2', status: 'SAFE',         statusColor: '#10B981' },  // cocktail
+      { bac: '0.048', peak: '0.052', sober: '2h 50m', units: '3.8', spend: '£42.00', drinks: '4', status: 'MILD',         statusColor: '#FCD34D' },  // champagne
+    ];
+
+    // Dashboard DOM refs
+    var bacNumber = document.getElementById('bacNumber');
+    var bacStatusPill = document.getElementById('bacStatusPill');
+    var bacStatusDot = bacStatusPill ? bacStatusPill.querySelector('.bac-status-dot') : null;
+    var bacStatusText = bacStatusPill ? bacStatusPill.querySelector('.bac-status-text') : null;
+    var dashPeak = document.getElementById('dashPeak');
+    var dashSober = document.getElementById('dashSober');
+    var dashUnits = document.getElementById('dashUnits');
+    var dashSpend = document.getElementById('dashSpend');
+    var dashDrinks = document.getElementById('dashDrinks');
+
+    function updateDashboard(index) {
+      var data = dashData[index];
+      if (bacNumber) bacNumber.textContent = data.bac;
+      if (bacStatusText) bacStatusText.textContent = data.status;
+      if (bacStatusDot) {
+        bacStatusDot.style.background = data.statusColor;
+        bacStatusDot.style.boxShadow = '0 0 6px ' + data.statusColor;
+      }
+      if (dashPeak) dashPeak.textContent = data.peak;
+      if (dashSober) dashSober.textContent = data.sober;
+      if (dashUnits) dashUnits.textContent = data.units;
+      if (dashSpend) dashSpend.textContent = data.spend;
+      if (dashDrinks) dashDrinks.textContent = data.drinks;
+    }
 
     var transitionTimeout = null;
 
@@ -175,11 +206,6 @@
       // Update dots
       dots[current].classList.remove('active');
       dots[index].classList.add('active');
-
-      // Fade label out
-      if (labelText) {
-        labelText.style.opacity = '0';
-      }
 
       // Update glow
       var glow = carousel.querySelector('.glass-carousel-glow');
@@ -197,12 +223,9 @@
         window.sipwiseGlass.swapGlass(index);
       }
 
-      // Update label after transition
+      // Update dashboard data after transition
       transitionTimeout = setTimeout(function () {
-        if (labelText) {
-          labelText.textContent = labels[index];
-          labelText.style.opacity = '1';
-        }
+        updateDashboard(index);
         current = index;
         isTransitioning = false;
       }, 500);
@@ -264,6 +287,9 @@
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       startAuto();
     }
+
+    // Initialize dashboard for first drink
+    requestAnimationFrame(function () { updateDashboard(0); });
   }
 
   // --- Init all ---
