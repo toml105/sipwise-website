@@ -353,68 +353,100 @@ section { position: relative; }
 
 .glass-carousel {
   position: relative;
-  width: 300px;
-  height: 440px;
+  width: 280px;
+  height: 600px;
   animation: glass-float 6s ease-in-out infinite;
   overflow: visible;
 }
 
-/* Ambient glow behind glass */
+/* Ambient glow behind phone */
 .glass-carousel-glow {
   position: absolute;
-  inset: -50px;
+  inset: -60px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 217, 255, 0.18), rgba(108, 99, 255, 0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(0, 217, 255, 0.15), rgba(108, 99, 255, 0.08), transparent 70%);
   animation: pulse-glow 4s ease-in-out infinite;
   z-index: 0;
   transition: background 1s ease;
 }
 
-/* Glass slides */
-.glass-slide {
+/* ---- iPhone Frame ---- */
+.iphone-frame {
+  position: relative;
+  width: 260px;
+  height: 540px;
+  background: #1a1a2e;
+  border-radius: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(45, 212, 191, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+/* Dynamic island */
+.iphone-notch {
   position: absolute;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 260px;
-  height: 360px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo), visibility 0s 0.8s;
-  z-index: 1;
-  pointer-events: none;
+  width: 90px;
+  height: 24px;
+  background: #000;
+  border-radius: 12px;
+  z-index: 10;
+}
+
+/* Phone screen area */
+.iphone-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 41px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App header inside phone */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 42px 20px 8px;
+  z-index: 5;
+  position: relative;
+}
+.app-header-logo {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent-teal);
+  letter-spacing: 0.02em;
+}
+.app-header-icon {
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+}
+
+/* Glass canvas inside phone screen */
+.glass-slide {
+  flex: 1;
+  position: relative;
+  opacity: 1;
+  visibility: visible;
 }
 .glass-slide.active {
   opacity: 1;
   visibility: visible;
-  z-index: 2;
-  pointer-events: auto;
-  transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo), visibility 0s 0s;
-}
-.glass-slide.exit-left {
-  opacity: 0;
-  visibility: visible;
-  transform: translateX(-50%) translateX(-60px) scale(0.92);
-  transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo), visibility 0s 0.8s;
-}
-.glass-slide.enter-right {
-  opacity: 0;
-  visibility: visible;
-  transform: translateX(-50%) translateX(60px) scale(0.92);
-  transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo), visibility 0s 0.8s;
 }
 
-.glass-slide svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 20px 60px rgba(0, 217, 255, 0.12));
-}
-
-/* Three.js canvas — radial mask to blend edges seamlessly into the page */
-#glassCanvasContainer {
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at center, black 30%, transparent 62%);
-  mask-image: radial-gradient(ellipse 70% 70% at center, black 30%, transparent 62%);
-}
 #glassCanvas {
   width: 100%;
   height: 100%;
@@ -430,19 +462,17 @@ section { position: relative; }
   animation: none;
 }
 
-/* Drink label below glass */
+/* Drink label inside phone */
 .glass-label {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
   text-align: center;
+  padding: 4px 0 2px;
+  z-index: 5;
+  position: relative;
 }
 .glass-label-text {
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   letter-spacing: 0.05em;
   opacity: 1;
@@ -450,10 +480,52 @@ section { position: relative; }
   white-space: nowrap;
 }
 
-/* Carousel dots */
+/* App bottom nav inside phone */
+.app-bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 8px 14px;
+  background: rgba(10, 14, 33, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 5;
+  position: relative;
+}
+.app-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.55rem;
+  font-family: var(--font-body);
+}
+.app-nav-item.active {
+  color: var(--accent-teal);
+}
+.app-nav-item svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Home indicator bar */
+.iphone-home-bar {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+/* Carousel dots (below phone) */
 .glass-dots {
   position: absolute;
-  bottom: 0;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
